@@ -574,11 +574,28 @@
 
             if (this.csvSchema.time.beginColumn !== -1) {
 
-              tmp["begin"] = this._getDate(this.csvSchema.time.beginFormat, e.data[i][this.csvSchema.time.beginColumn]);
+              if(this.csvSchema.time.beginFormat === "milliseconds"){
+                tmp["begin"] = e.data[i][this.csvSchema.time.beginColumn];
+              }
+              else if(this.csvSchema.time.beginFormat === "standard"){
+                tmp["begin"] = Data.parse( e.data[i][this.csvSchema.time.beginColumn] );
+              }
+              else{
+                tmp["begin"] = this._getDate(this.csvSchema.time.beginFormat, e.data[i][this.csvSchema.time.beginColumn]);
+              }
 
               if (this.csvSchema.time.endColumn !== -1) {
 
-                tmp["end"] = this._getDate(this.csvSchema.time.endFormat, e.data[i][this.csvSchema.time.endColumn]);
+                if(this.csvSchema.time.endFormat === "milliseconds"){
+                  tmp["end"] = e.data[i][this.csvSchema.time.endColumn];
+                }
+                else if(this.csvSchema.time.endFormat === "standard"){
+                  tmp["end"] = Data.parse( e.data[i][this.csvSchema.time.endColumn] );
+                }
+                else{
+                  tmp["end"] = this._getDate(this.csvSchema.time.endFormat, e.data[i][this.csvSchema.time.endColumn]);
+                }
+
 
               } else {
 
