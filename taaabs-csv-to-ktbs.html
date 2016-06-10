@@ -488,14 +488,21 @@
         //TODO : Remove log.
         console.log('    SLICE RETRIEVED ' + that.sliceIndex + new Date().toISOString());
 
+                console.log( this._remains );
+                console.log( result[0] + result[1] + result[2] + result[3] + result[4] + result[5] + result[6] + result[7] );
+
+        if( that._remains === undefined || that._remains === null )
+          that._remains = "";
+        var sData = that._remains + result;
+
         var worker = new Worker(that.resolveUrl('csvToArray.js'));
         worker.addEventListener('message', function(e) {
           that.parsedData = e;
           worker.terminate();
-          that._postSlice();
+          that._postSlice(sData);
         }, false);
 
-        var sData = that.remains + result;
+
 
         worker.postMessage({
           strData: sData,
@@ -504,19 +511,34 @@
 
       },
 
-      _postSlice: function() {
+      _postSlice: function(sData) {
 
         //TODO : Remove log.
         console.log('      SLICE PARSED ' + this.sliceIndex + new Date().toISOString());
 
         var e = this.parsedData;
-        this.remains = "";
+        // Set the remains for next slice.
+        this.set('_remains', "");
 
-        for (var i = 0; i < e.data[e.data.length - 1].length - 1; i++) {
-          this.remains = this.remains + e.data[e.data.length - 1][i] + this.csvSchema.separator;
+        var lastString = '"' + e.data[e.data.length - 1][0] + '"';
+        for (var i = 1; i < e.data[e.data.length - 1].length; i++) {
+          if (e.data[e.data.length - 1][i] !== "")
+            lastString += ',"' + e.data[e.data.length - 1][i].replace(/"/g, '""') + '"';
         }
 
-        this.remains = this.remains + e.data[e.data.length - 1][e.data[e.data.length - 1].length - 1];
+        sDataEnding = "";
+
+        var index = sData.indexOf(lastString);
+
+        if (index !== -1) {
+          for (var i = index; i < sData.length; i++) {
+            sDataEnding += sData[i];
+          }
+        }
+
+        this._remains = sDataEnding;
+
+
 
 
         this.partIndex = 0;
