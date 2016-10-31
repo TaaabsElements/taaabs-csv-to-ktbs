@@ -518,7 +518,7 @@
 
         var e = this.parsedData;
         var parsed = e.data;
-
+        var that = this;
         if (that._remains.length > 0) {
 
           if (that._remains.length < that.csvSchema.columns.length || parsed[0].length < that.csvSchema.columns.length) {
