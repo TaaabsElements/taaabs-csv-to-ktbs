@@ -493,7 +493,7 @@
 
         if( that._remains === undefined || that._remains === null )
           that._remains = "";
-        var sData = that._remains + result;
+        var sData = result;
 
         var worker = new Worker(that.resolveUrl('csvToArray.js'));
         worker.addEventListener('message', function(e) {
@@ -517,29 +517,47 @@
         console.log('      SLICE PARSED ' + this.sliceIndex + new Date().toISOString());
 
         var e = this.parsedData;
-        // Set the remains for next slice.
-        this.set('_remains', "");
+        var parsed = e.data;
 
-        var lastString = '"' + e.data[e.data.length - 1][0] + '"';
-        for (var i = 1; i < e.data[e.data.length - 1].length; i++) {
-          if (e.data[e.data.length - 1][i] !== "")
-            lastString += ',"' + e.data[e.data.length - 1][i].replace(/"/g, '""') + '"';
-        }
+        if (that._remains.length > 0) {
 
-        sDataEnding = "";
+          if (that._remains.length < that.csvSchema.columns.length || parsed[0].length < that.csvSchema.columns.length) {
+            // If a cell has been cut in half (most of the cases)
+            if (that._remains.length + parsed[0].length > that.csvSchema.columns.length) {
+              var line = [];
+              for (var i = 0; i < that._remains.length; i++) {
+                line.push(that._remains[i]);
+              }
+              line[line.length - 1] += parsed[0][0];
+              for (var i = 1; i < parsed[0].length; i++) {
+                line.push(parsed[0][i]);
+              }
+              parsed.splice(0, 1, line);
+            } else {
+              var line = [];
+              for (var i = 0; i < that._remains.length; i++) {
+                line.push(that._remains[i]);
+              }
+              for (var i = 0; i < parsed[0].length; i++) {
+                line.push(parsed[0][i]);
+              }
+              parsed.splice(0, 1, line);
+            }
 
-        var index = sData.indexOf(lastString);
-
-        if (index !== -1) {
-          for (var i = index; i < sData.length; i++) {
-            sDataEnding += sData[i];
+          } else {
+            parsed.splice(0, 0, line);
           }
+
         }
 
-        this._remains = sDataEnding;
+        // Set the remains for next slice.
+        if (that._sliceIndex !== that._slicesCount) {
+          that.set('_remains', parsed[parsed.length - 1]);
+          parsed.splice(parsed.length - 1, 1);
+        }
 
-
-
+        console.log(parsed);
+        console.log(that._remains);
 
         this.partIndex = 0;
         if (this.sliceIndex === 1 && this.csvSchema.columnHeader)
