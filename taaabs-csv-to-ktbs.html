@@ -822,7 +822,7 @@
         var match = data.match(/\d+/g);
 
         var month = getElement(format, 'M', data, match);
-        var date = new Date(getElement(format, 'Y', data, match), month, getElement(format, 'D', data, match));
+        var date = new Date(getElement(format, 'Y', data, match), month-1, getElement(format, 'D', data, match));
         date.setHours(getElement(format, 'H', data, match));
         date.setMilliseconds(getElement(format, 's', data, match));
         date.setMinutes(getElement(format, 'm', data, match));
