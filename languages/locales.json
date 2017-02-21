@@ -1,0 +1,14 @@
+{
+    "en": {
+      "cant-create": "You cannot create a configuration at the point of the upload process.",
+      "start-upload": "Start upload",
+      "save-next-loading": "Uploading the new import configuration...",
+      "save-next-loading-success": "Upload succeed."
+    },
+    "fr": {
+      "cant-create": "Vous ne pouvez pas créer de configuration d'import à ce stade du processus d'import.",
+      "start-upload": "Démarrer le téléversement",
+      "save-next-loading": "Téléversement de la configuration d'import...",
+      "save-next-loading-success": "Téléversement réussi."
+    }
+}

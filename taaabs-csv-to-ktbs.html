@@ -1,166 +1,60 @@
-<link rel="import" href="../taaabs-themes/taaabs-dark-theme.html">
+<link rel="import" href="../taaabs-themes/taaabs-theme.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-progress/paper-progress.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../notify-toast-behavior/notify-toast-behavior.html">
 <dom-module id="taaabs-csv-to-ktbs">
   <template>
-
-    <style include="taaabs-dark-theme"></style>
+    <style include="taaabs-theme"></style>
     <style>
-      .progressContainer {
-        display: block;
-        width: 1000px;
-        margin: 0 auto;
-        height: 30px;
-        border: solid 1px white;
+      .file-name{
+        width: 200px;
+        padding:28px 8px 0px 8px;
+        line-height: 24px;
+        border-bottom: solid 1px grey;
+        margin-bottom: 8px
       }
-
-      .progressContainer > div {
-        width: 0px;
-        height: 100%;
-        background-color: #21b2a6;
+      .hour-glass{
+        width:40px;
+        padding:28px 8px 0px 8px;
+        line-height: 24px;
       }
-      /*/////////*/
-      /* SPINNER */
-      /*/////////*/
-
-      #spinner {
-        opacity: 0;
-        padding-top: 1em;
-        -webkit-transition: opacity 0.25s ease-in-out;
-        -moz-transition: opacity 0.25s ease-in-out;
-        -o-transition: opacity 0.25s ease-in-out;
-        -ms-transition: opacity 0.25s ease-in-out;
+      paper-progress {
+        --paper-progress-transition-duration: 0.25s;
+        --paper-progress-transition-timing-function: ease;
+        --paper-progress-transition-transition-delay: 0s;
       }
-
-      .spinner {
-        margin: 0 auto;
-        width: 50px;
-        height: 40px;
-        text-align: center;
-        font-size: 10px;
-        display: block;
-      }
-
-      .spinner > div {
-        /*background-color: #ed4933;*/
-        background-color: #21b2a6;
-        height: 100%;
-        width: 6px;
-        display: inline-block;
-        -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
-        animation: sk-stretchdelay 1.2s infinite ease-in-out;
-      }
-
-      .spinner .rect2 {
-        -webkit-animation-delay: -1.1s;
-        animation-delay: -1.1s;
-      }
-
-      .spinner .rect3 {
-        -webkit-animation-delay: -1.0s;
-        animation-delay: -1.0s;
-      }
-
-      .spinner .rect4 {
-        -webkit-animation-delay: -0.9s;
-        animation-delay: -0.9s;
-      }
-
-      .spinner .rect5 {
-        -webkit-animation-delay: -0.8s;
-        animation-delay: -0.8s;
-      }
-
-      @-webkit-keyframes sk-stretchdelay {
-        0%,
-        40%,
-        100% {
-          -webkit-transform: scaleY(0.4)
-        }
-        20% {
-          -webkit-transform: scaleY(1.0)
-        }
-      }
-
-      @keyframes sk-stretchdelay {
-        0%,
-        40%,
-        100% {
-          transform: scaleY(0.4);
-          -webkit-transform: scaleY(0.4);
-        }
-        20% {
-          transform: scaleY(1.0);
-          -webkit-transform: scaleY(1.0);
-        }
+      paper-progress.progress-sec{
+        --paper-progress-transition-duration: 1s;
+        --paper-progress-active-color: var(--paper-green-300);
+        --paper-progress-transition-timing-function: linear;
       }
     </style>
 
     <div style="width: 1000px; margin: 0 auto;">
       <taaabs-csv-collector-steps id="tccs" steps=[[_steps]]></taaabs-csv-collector-steps>
     </div>
-
     <iron-pages selected="{{_pageIndex}}" style="margin-top: 30px;">
-
       <div style="max-width: 1000px; margin: 0 auto">
         <taaabs-csv-collector-files id="tccf" files="{{files}}" file-reader={{_filereader}}></taaabs-csv-collector-files>
       </div>
-
       <div style="max-width: 1000px; margin: 0 auto">
         <taaabs-csv-collector-configs id="tccc" csv-schemas="[[csvSchemas]]">
         </taaabs-csv-collector-configs>
       </div>
-
       <div style="max-width: 1000px; margin: 0 auto">
-
-
-        <div style="display:table; table-layout:fixed; width: 100%">
-          <div style="display:table-cell; width: 30%; border-right: solid 1px grey; padding:1em;">
-            <div style="display:block; max-height: 300px; min-height: 100px;">
-              <template is="dom-repeat" items="{{files}}">
-                <div style="padding-bottom:1em;">
-                  {{item.name}}
-                </div>
-              </template>
-            </div>
-          </div>
-          <div style="display:table-cell; width: 30%;border-right: solid 1px grey;padding: 1em;">
-            <div id="upload" class="button" style="display:block;" on-click="_startUpload">
-              UPLOAD
-            </div>
-            <div id="spinner">
-              <div class="spinner">
-                <div class="rect1"></div>
-                <div class="rect2"></div>
-                <div class="rect3"></div>
-                <div class="rect4"></div>
-                <div class="rect5"></div>
-              </div>
-            </div>
-          </div>
-          <div style="display:table-cell; width: 30%; padding: 1em;">
-            <div style="display:block; max-height: 300px">
-              <template is="dom-repeat" items="{{_tracesCreatedUrl}}">
-                <div style="padding-bottom:1em;">
-                  {{item}}
-                </div>
-              </template>
-            </div>
-          </div>
+        <center>
+          <paper-button noink raised on-click='_onStartUploadClick'>
+            [[localize('start-upload')]] <iron-icon icon="icons:file-upload"></iron-icon>
+          </paper-button>
+        </center>
+        <div id="file-objects-target" class="flex-vertical swag-scroll fit-width" style="max-height: 500px">
         </div>
-
-        <p>Current file status : {{currentFile.name}}</p>
-        <div class="progressContainer">
-          <div id="fileProgress">
-          </div>
-        </div>
-
-
       </div>
-
-      <div>
-        UPLOAD DONE
-      </div>
-
     </iron-pages>
+    <!---- Notify toast ---->
+    <paper-toast id="__notify_toast__" style="background-color:rgba(0,0,0,0.37)" duration=0> </paper-toast>
   </template>
   <script>
     /**
@@ -184,19 +78,100 @@
 
       properties: {
 
-        _steps: {
+        /** --------------------------------------------------------------------
+        // MARK: Properties: upload
+        **/
+
+        /**
+         * List of the DOM elelents that display the file upload progress.
+         *
+         * @attribute _filesObjects
+         * @type Array
+         */
+        _filesObjects: {
           type: Array,
-          value: [{
-            'name': 'file selection',
-            'state': 'current'
-          }, {
-            'name': 'import-config selection',
-            'state': 'undone'
-          }, {
-            'name': 'trace upload',
-            'state': 'undone'
-          }]
+          notify: true,
+          value: function() {
+            return [];
+          }
         },
+        /**
+         * Index of the current file being upload.
+         *
+         * @attribute _uploadFileIndex
+         * @type Number
+         */
+        _uploadFileIndex: {
+          type: Number,
+          notify: true,
+          value: 0
+        },
+        /**
+         * The current trace to fill.
+         *
+         * @attribute _currentTrace
+         * @type Object
+         */
+        _currentTrace: {
+          type: Object,
+          notify: true
+        },
+        /**
+         * The current load package index.
+         *
+         * @attribute _obselIndex
+         * @type Number
+         */
+        _obselIndex: {
+          type: Number,
+          notify: true,
+          value: 0
+        },
+        /**
+         * The current slice index.
+         *
+         * @attribute _sliceIndex
+         * @type Number
+         */
+        _sliceIndex: {
+          type: Number,
+          notify: true
+        },
+        /**
+         * The number of slices in the trace file.
+         *
+         * @attribute _sliceCount
+         * @type Number
+         */
+        _sliceCount: {
+          type: Number,
+          notify: true
+        },
+        /**
+         * The attribute which must be created (if the csv file ahs json in it).
+         *
+         * @attribute _temporaryAttributes
+         * @type Array
+         */
+        _temporaryAttributes: {
+          type: Array,
+          notify: true,
+          value: []
+        },
+        /**
+         * List of the last uploading durations.
+         *
+         * @attribute _uploadingTimes
+         * @type Array
+         */
+        _uploadingTimes: {
+          type: Array,
+          notify: true,
+          value: [30]
+        },
+        /** --------------------------------------------------------------------
+        // MARK: Properties: csv-import
+        **/
 
         /**
          * Traces files opened by the user.
@@ -211,7 +186,6 @@
             return [];
           },
         },
-
         /**
          * Current csv schema used/edited by the user.
          *
@@ -225,13 +199,19 @@
             return {};
           }
         },
-
-        _tracesCreatedUrl: {
+        /**
+         * Traces files opened by the user.
+         *
+         * @attribute files
+         * @type Array
+         */
+        files: {
           type: Array,
           notify: true,
-          value: []
+          value: function() {
+            return [];
+          },
         },
-
         /**
          * Array of all existing csv schemas on the current base.
          *
@@ -245,7 +225,12 @@
             return [];
           }
         },
-
+        /**
+         * The current ktbs base.
+         *
+         * @attribute base
+         * @type Object
+         */
         base: {
           type: Object,
           notify: true,
@@ -254,6 +239,23 @@
           }
         },
 
+        /** --------------------------------------------------------------------
+        // MARK: Properties: misc
+        **/
+
+        _steps: {
+          type: Array,
+          value: [{
+            'name': 'file selection',
+            'state': 'current'
+          }, {
+            'name': 'import-config selection',
+            'state': 'undone'
+          }, {
+            'name': 'trace upload',
+            'state': 'undone'
+          }]
+        },
         _pageIndex: {
           type: Number,
           notify: true,
@@ -261,27 +263,6 @@
             return 0;
           }
         },
-
-        _temporaryAttributes: {
-          type: Array,
-          notify: true,
-          value: []
-        },
-
-        /**
-         * Localization object.
-         *
-         * @attribute _i18n
-         * @type Object
-         */
-        _i18n: {
-          type: Object,
-          value: function() {
-            return {}
-          },
-          notify: true
-        },
-
         /**
          * Localization.
          * fr, en.
@@ -296,42 +277,42 @@
         }
       },
 
+      behaviors: [
+        Polymer.AppLocalizeBehavior,
+        NotifyToastBehavior
+      ],
+
       ready: function() {
-        // Create a pointer to `this` for later.
-        var that = this;
-
-        this.$.tccs.addEventListener('STEP_CLICKED', function(e) {
-          that._goToPage(e.detail.index);
-        })
-        this.$.tccf.addEventListener('FILES_SELECTED', function() {
-          that._goToPage(1);
-        });
-        this.$.tccc.addEventListener('CREATE_SCHEMA', function(e) {
-          alert('You cannot create at the point of the upload process. ');
-        })
-        this.$.tccc.addEventListener('SELECT_SCHEMA', function(e) {
-          that.set('csvSchema', that.csvSchemas[e.detail.index]);
-          that._goToPage(2);
-        })
+        this.$.tccs.addEventListener('step-clicked', function(e) {
+          this._goToPage(e.detail.index);
+        }.bind(this))
+        this.$.tccf.addEventListener('files-selected', function() {
+          this.set('fileReader', this.$.tccf.fileReader);
+          this.initProgressBars();
+          this._goToPage(1);
+        }.bind(this));
+        this.$.tccc.addEventListener('create-schema', function(e) {
+          this.notifyToast(this.localize('cant-create'), {
+            type: 'Error'
+          });
+        }.bind(this))
+        this.$.tccc.addEventListener('select-schema', function(e) {
+          this.set('csvSchema', this.csvSchemas[e.detail.index]);
+          this._goToPage(2);
+        }.bind(this))
       },
 
-      /**
-       * Triggered when the language option is changed.
-       * Switches every text into the new language.
-       *
-       * @method _languageChanged
-       */
-      _languageChanged: function() {
-        for (var prop in this._i18n) {
-          var tmp = "_i18n." + prop + ".default";
-          this.set(tmp, this._i18n[prop][this.language]);
-        }
+      attached: function() {
+        // Load i18n json.
+        this.loadResources(this.resolveUrl('./languages/locales.json'));
       },
+
+      /** ----------------------------------------------------------------------
+      // MARK: Functions: utils
+      **/
 
       _goToPage: function(index) {
-
         this.set('_pageIndex', index);
-
         for (var i = 0; i < this._steps.length; i++) {
           if (i < index) {
             this.splice('_steps', i, 1, {
@@ -352,77 +333,120 @@
         }
       },
 
-
-      _startUpload: function() {
-
-
-        this.traceCount = 0;
-        this.fileIndex = 0;
-
-        var that = this;
-
-        // TODO A virer quand samotrace ira mieux.
-
-        this.$.upload.style.opacity = 0.37;
-        this.$.upload.style.pointerEvents = "none";
-        this.$.spinner.style.opacity = 1;
-
-
-        that.base.list_computed_traces()
-          .then(function(listTraces) {
-            that.traceCount = listTraces.length;
-
-            that._createTrace();
-          })
-          .catch(function(err) {
-            console.log(err);
-          });
-
+      /**
+       * Create a progress bar for each files to upload.
+       *
+       * @method initProgressBars
+       */
+      initProgressBars: function() {
+        var fo = [];
+        for (var i = 0; i < this.files.length; i++) {
+          // Create the dom elements
+          var main_div = document.createElement('div');
+          main_div.classList.add('fit-width');
+          var first_line = document.createElement('div');
+          first_line.classList.add('flex-horizontal', 'fit-width');
+          var file_name = document.createElement('div');
+          file_name.classList.add('file-name');
+          file_name.textContent = this.files[i].name;
+          var trace_div = document.createElement('div');
+          trace_div.classList.add('flexchild');
+          var trace_input = document.createElement('paper-input');
+          trace_input.classList.add('fit-width');
+          trace_input.set('label', 'Trace id');
+          var icon_div = document.createElement('div');
+          icon_div.classList.add('flex-reversed', 'hour-glass');
+          var icon = document.createElement('iron-icon');
+          icon.set('icon', 'icons:hourglass-empty');
+          var progress = document.createElement('paper-progress');
+          progress.classList.add('fit-width', 'transiting');
+          progress.set('value', 0);
+          var progressSec = document.createElement('paper-progress');
+          progressSec.classList.add('fit-width', 'transiting', 'progress-sec');
+          progressSec.set('value', 0);
+          // Add each dom element
+          trace_div.appendChild(trace_input);
+          icon_div.appendChild(icon);
+          first_line.appendChild(file_name);
+          first_line.appendChild(trace_div);
+          first_line.appendChild(icon_div);
+          main_div.appendChild(first_line);
+          main_div.appendChild(progress);
+          main_div.appendChild(progressSec);
+          this.$['file-objects-target'].appendChild(main_div);
+          // Create the file object
+          var nfo = {
+            fileIndex: i,
+            fileName: this.files[i].name,
+            progress: 0,
+            traceName: '',
+            domIcon: icon_div,
+            domProgress: progress,
+            domProgressSec: progressSec
+          }
+          // Set listeners
+          trace_input.addEventListener('change', function(nfo, evt) {
+            nfo.traceName = evt.target.value;
+          }.bind(null, nfo));
+          this.push('_filesObjects', nfo);
+        }
       },
 
+      /** ----------------------------------------------------------------------
+      // MARK: Functions: upload
+      **/
+
+      _onStartUploadClick: function() {
+        var valid = true;
+        var forbidden_names = [];
+        for (var i = 0; i < this.base.contains.length; i++)
+          forbidden_names.push(this.base.contains[i]['@id'].replace('/', ''));
+        for (var i = 0; i < this._filesObjects.length; i++)
+          if (this._filesObjects[i].traceName === "" || forbidden_names.indexOf(this._filesObjects[i].traceName) !== -1)
+            valid = false;
+        if (valid) {
+          this._createTrace();
+        } else {
+          this.notifyToast('At least one of the trace names is invalid.', {
+            type: 'Error',
+            timeout: -1
+          });
+        }
+      },
+
+      /**
+       * If this file index is smaller than the number of files, create a trace, then calls `_uploadTrace`.
+       *
+       * @method initProgressBars
+       */
       _createTrace: function() {
-
-        var that = this;
-
-        that.$.fileProgress.style.width = '0px';
-
-        that.traceCount = that.traceCount + 1;
-        that.obselIndex = 0;
-
-        if (that.fileIndex < that.files.length) {
-
-          //TODO : Remove log.
-          console.log('CREATE TRACE ' + that.fileIndex + new Date().toISOString());
-
-          that.currentFile = that.files[that.fileIndex];
-
-          that.base.create_stored_trace(
-              't' + that.traceCount,
-              that.csvSchema.id,
+        if (this._uploadFileIndex < this.files.length) {
+          var file_index = this._uploadFileIndex;
+          var trace_name = this._filesObjects[file_index].traceName;
+          var model_id = this.csvSchema.id;
+          var file_name = this._filesObjects[file_index].fileName;
+          // Set DOM progress
+          this._filesObjects[file_index].domIcon.innerHTML = '0%';
+          this.set('_sliceIndex', 1);
+          this.set('_sliceCount', this.fileReader.getSlices(file_index));
+          // Create the trace and start the upload
+          this.base.create_stored_trace(
+              trace_name,
+              model_id,
               null,
               null,
-              'trace from ' + that.currentFile.name,
-              'This trace was generated with a csv collector, from the file ' + that.currentFile.name + '.')
+              'trace from ' + file_name,
+              'This trace was generated with a csv collector, from the file ' + file_name + '.')
             .then(function(trace) {
-
-              that.currentTrace = trace;
-              that.sliceIndex = 1;
-              that.sliceCount = that._filereader.getSlices(that.fileIndex);
-
-              //TODO : Remove log.
-              console.log('  TRACE CREATED ' + that.fileIndex + new Date().toISOString());
-
-              that._uploadTrace();
-            })
+              this.set('_currentTrace', trace);
+              this._uploadTrace();
+            }.bind(this))
             .catch(function(err) {
               console.log(err);
             })
-
         } else {
-          that._pageIndex = 3;
-
-
-          if (that._temporaryAttributes.length > 0) {
+          // TODO : Check this
+          if (this._temporaryAttributes.length > 0) {
             var model = new Samotraces.Ktbs.Model(that.base.uri + that.csvSchema.id);
 
             //TODO : Remove log.
@@ -433,8 +457,6 @@
                 var graph = [];
                 for (var i = 0; i < model.list_type_obsels.length; i++)
                   graph.push(model.list_type_obsels[i]);
-                for (var i = 0; i < model.list_type_attributes.length; i++)
-                  graph.push(model.list_type_attributes[i]);
                 for (var i = 0; i < that._temporaryAttributes.length; i++)
                   graph.push(that._temporaryAttributes[i]);
 
@@ -454,239 +476,261 @@
                 console.log(err);
               })
           }
-
-
+          this.notifyToast('Upload complete!', {
+            type: 'Success',
+            timeout: -1
+          });
         }
-
       },
 
+      /**
+       * Set the csv-utils of the fileReader, then calls `_parseSlice`.
+       *
+       * @method _uploadTrace
+       */
       _uploadTrace: function() {
-
-        var that = this;
-
-        //TODO : Remove log.
-        console.log('  UPLOAD TRACE STARTED ' + that.sliceIndex + new Date().toISOString());
-
-        that.parsedData = [];
-        that.remains = "";
-
-        var callbackObject = {
-          onload: function(evt) {
-            that._startParsing(evt.target.result);
-          },
-          onerror: function(evt) {},
-          onprogress: function(evt) {}
-        }
-
-        that._filereader.getSlice(that.fileIndex, that.sliceIndex, callbackObject);
-      },
-
-      _startParsing: function(result) {
-
-
-
-        var that = this;
-
-        //TODO : Remove log.
-        console.log('    SLICE RETRIEVED ' + that.sliceIndex + new Date().toISOString());
-
-                console.log( this._remains );
-                console.log( result[0] + result[1] + result[2] + result[3] + result[4] + result[5] + result[6] + result[7] );
-
-        if( that._remains === undefined || that._remains === null )
-          that._remains = "";
-        var sData = result;
-
-        var worker = new Worker(that.resolveUrl('csvToArray.js'));
-        worker.addEventListener('message', function(e) {
-          that.parsedData = e;
-          worker.terminate();
-          that._postSlice(sData);
-        }, false);
-
-
-
-        worker.postMessage({
-          strData: sData,
-          strDelimiter: that.csvSchema.separator
+        var file_index = this._uploadFileIndex;
+        this.fileReader.setCsvUtils({
+          file_index: file_index,
+          separator: this.csvSchema.separator,
+          current_slice: 1,
+          last_line: [],
+          columns_count: this.csvSchema.columns.length
         });
-
+        this._parseSlice();
       },
 
-      _postSlice: function(sData) {
-
-        //TODO : Remove log.
-        console.log('      SLICE PARSED ' + this.sliceIndex + new Date().toISOString());
-
-        var e = this.parsedData;
-        var parsed = e.data;
-        var that = this;
-        if (that._remains.length > 0) {
-
-          if (that._remains.length < that.csvSchema.columns.length || parsed[0].length < that.csvSchema.columns.length) {
-            // If a cell has been cut in half (most of the cases)
-            if (that._remains.length + parsed[0].length > that.csvSchema.columns.length) {
-              var line = [];
-              for (var i = 0; i < that._remains.length; i++) {
-                line.push(that._remains[i]);
-              }
-              line[line.length - 1] += parsed[0][0];
-              for (var i = 1; i < parsed[0].length; i++) {
-                line.push(parsed[0][i]);
-              }
-              parsed.splice(0, 1, line);
-            } else {
-              var line = [];
-              for (var i = 0; i < that._remains.length; i++) {
-                line.push(that._remains[i]);
-              }
-              for (var i = 0; i < parsed[0].length; i++) {
-                line.push(parsed[0][i]);
-              }
-              parsed.splice(0, 1, line);
-            }
-
-          } else {
-            parsed.splice(0, 0, line);
-          }
-
-        }
-
-        // Set the remains for next slice.
-        if (that._sliceIndex !== that._slicesCount) {
-          that.set('_remains', parsed[parsed.length - 1]);
-          parsed.splice(parsed.length - 1, 1);
-        }
-
-        console.log(parsed);
-        console.log(that._remains);
-
-        this.partIndex = 0;
-        if (this.sliceIndex === 1 && this.csvSchema.columnHeader)
-          this.partIndex = 1;
-        this._postPartOfSlice();
-
+      /**
+       * Calls fileReader.getSliceCsv, then calls `_postSlice`.
+       *
+       * @method _parseSlice
+       */
+      _parseSlice: function() {
+        this.fileReader.getSliceCsv().then(function(data) {
+          this._postSlice(data);
+        }.bind(this)).catch(function(err) {
+          console.log(err);
+        });
       },
 
-      _postPartOfSlice: function() {
-
-        var e = this.parsedData;
+      _postSlice: function(data) {
         var obsels = [];
-        var i = this.partIndex;
-
-        while (i < e.data.length && i < (this.partIndex + 500)) {
-
+        var i = 0;
+        if (this.csvSchema.columnHeader && this._sliceIndex === 1) i = 1;
+        // Create the obsels
+        while (i < data.length) {
           var push = true;
-
           var tmp = {
-            "@id": "o" + this.obselIndex,
-            "subject": "obsel of trace ",
+            "@id": "o" + this._obselIndex,
+            "subject": "obsel of trace",
           };
-
           var typeObject = null;
-
-          if (e.data[i].length !== this.csvSchema.columns.length)
+          // Check if the number of columns is correct.
+          if (data[i].length !== this.csvSchema.columns.length)
             push = false;
-
           else {
-            if (this.csvSchema.typeColumn !== -1) {
-              typeObject = this._findTypeObject(e.data[i][this.csvSchema.typeColumn]);
-              if (typeObject !== null && typeObject.enabled)
-                tmp['@type'] = 'm:' + typeObject.name;
-              else {
-                push = false;
-              }
-            } else {
-              tmp['@type'] = 'm:defaultType';
-            }
-
-            for (var j = 0; j < e.data[i].length; j++) {
-              if (typeObject === null) {
-                tmp['m:' + this.csvSchema.columns[j].name] = e.data[i][j];
-              } else {
-                if (typeObject.attributes[j].enabled) {
-                  if (typeObject.attributes[j].datatype === 'json') {
-                    this._getAttributesFromJSON(tmp, typeObject.attributes[j].name, e.data[i][j]);
-                  } else {
-                    tmp['m:' + typeObject.attributes[j].name] = e.data[i][j];
-                  }
-                }
-              }
-            }
-
-            if (this.csvSchema.time.beginColumn !== -1) {
-
-              if(this.csvSchema.time.beginFormat === "milliseconds"){
-                tmp["begin"] = e.data[i][this.csvSchema.time.beginColumn];
-              }
-              else if(this.csvSchema.time.beginFormat === "standard"){
-                tmp["begin"] = Data.parse( e.data[i][this.csvSchema.time.beginColumn] );
-              }
-              else{
-                tmp["begin"] = this._getDate(this.csvSchema.time.beginFormat, e.data[i][this.csvSchema.time.beginColumn]);
-              }
-
-              if (this.csvSchema.time.endColumn !== -1) {
-
-                if(this.csvSchema.time.endFormat === "milliseconds"){
-                  tmp["end"] = e.data[i][this.csvSchema.time.endColumn];
-                }
-                else if(this.csvSchema.time.endFormat === "standard"){
-                  tmp["end"] = Data.parse( e.data[i][this.csvSchema.time.endColumn] );
-                }
-                else{
-                  tmp["end"] = this._getDate(this.csvSchema.time.endFormat, e.data[i][this.csvSchema.time.endColumn]);
-                }
-
-
-              } else {
-
-                tmp["end"] = tmp["begin"];
-
-              }
-
-            } else {
-
-              tmp["begin"] = this.obselIndex;
-              tmp["end"] = this.obselIndex;
-
-            }
+            // Set the type of the obsel
+            tmp = this._getAttributes(tmp, data[i]);
+            // Set the time
+            var beginEnd = this._getBeginEnd(data[i]);
+            tmp["begin"] = beginEnd.begin;
+            tmp["end"] = beginEnd.end;
           }
-
-          this.obselIndex = this.obselIndex + 1;
           i = i + 1;
+          this.set('_obselIndex', this._obselIndex + 1);
           if (push)
             obsels.push(tmp);
-
         }
-
-        this.partIndex = i;
-
+        // Send the obsels
         var that = this;
-
-        //TODO : Remove log.
-        console.log('        PACKAGED READY ' + that.partIndex + new Date().toISOString());
-
-        this.currentTrace.create_obsels(obsels)
-          .then(function(data) {
-            that._postPartOfSliceSuccess();
-          })
-          .catch(function(data) {
-            console.log(data);
-            that._postPartOfSliceError();
-          });
-
+        var i = 0;
+        var total_parts = Math.ceil(obsels.length / 500);
+        // Send the 500 first obsels. Calls send if there are some obsels left. Otherwise, calls parseSlice.
+        function send(o2s) {
+          var obs2send = o2s.splice(0, 500);
+          var part = 1 / that._sliceCount;
+          var file_index = that._uploadFileIndex;
+          // Calculate the estimated time for the upoad
+          var estimatedTime = 0;
+          var total = 0;
+          var count = 0;
+          for (var k = 0; k < that._uploadingTimes.length; k++) {
+            total += that._uploadingTimes[k] * Math.exp(-(that._uploadingTimes.length - k));
+            count += 1 * Math.exp(-(that._uploadingTimes.length - k));
+          }
+          estimatedTime = total/count;
+          var startTime = (new Date()).valueOf();
+          var count = 0;
+          var secProgress = setInterval(function(){
+            count += 1;
+            var p =  Math.ceil((count/estimatedTime)*100);
+            that._filesObjects[file_index].domProgressSec.value = p;
+          }, 1000);
+          // Send the obsels
+          that._currentTrace.create_obsels(obs2send)
+            .then(function(data) {
+              clearInterval(secProgress);
+              var endTime = (new Date()).valueOf();
+              var totalTime = (endTime - startTime)/1000;
+              that.push('_uploadingTimes',totalTime);
+              that._filesObjects[file_index].domProgressSec.set('value', 0);
+              var p = (((that._sliceIndex - 1) / that._sliceCount) + part * ((i + 1) / total_parts)) * 100;
+              p = Math.ceil(p);
+              that._filesObjects[file_index].progress = p;
+              that._filesObjects[file_index].domIcon.innerHTML = p + '%';
+              that._filesObjects[file_index].domProgress.set('value', p);
+              i = i + 1;
+              if (i < total_parts) {
+                send(o2s);
+              } else {
+                that.set('_sliceIndex', that._sliceIndex + 1);
+                if (that._sliceIndex <= that._sliceCount) {
+                  that._parseSlice();
+                } else {
+                  that.set('_uploadFileIndex', that._uploadFileIndex + 1);
+                  var icon = document.createElement('iron-icon');
+                  icon.set('icon', 'icons:check');
+                  icon.classList.add('fgSuccess');
+                  that._filesObjects[file_index].domIcon.innerHTML = "";
+                  that._filesObjects[file_index].domIcon.appendChild(icon);
+                  that._createTrace();
+                }
+              }
+            })
+            .catch(function(data) {
+              console.log(data);
+            });
+        };
+        send(obsels);
       },
 
-      _getAttributesFromJSON: function(tmpObsel, attributeBase, data) {
+      /** ----------------------------------------------------------------------
+      // MARK: Functions: obsel creation
+      **/
 
+      /**
+       * Return the attributes begin and end of an obsel from its csv line.
+       *
+       * @param {!required} data {Array} The obsel line.
+       *
+       * @method _getBeginEnd
+       */
+      _getBeginEnd: function(data) {
+        var result = {};
+        if (this.csvSchema.time.beginColumn !== -1) {
+          if (this.csvSchema.time.beginFormat === "") {
+            result.begin = (new Date(data[this.csvSchema.time.beginColumn])).valueOf();
+          } else {
+            result.begin = this._getDate(this.csvSchema.time.beginFormat, data[this.csvSchema.time.beginColumn]);
+          }
+          if (this.csvSchema.time.endColumn !== -1) {
+            if (this.csvSchema.time.beginFormat === "") {
+              result.end = (new Date(data[this.csvSchema.time.endColumn])).valueOf();
+            } else {
+              result.end = this._getDate(this.csvSchema.time.endFormat, data[this.csvSchema.time.endColumn]);
+            }
+          } else {
+            result.end = result.begin;
+          }
+        } else {
+          result.begin = this._obselIndex;
+          result.end = this._obselIndex;
+        }
+        return result;
+      },
+
+      /**
+       * REturn the attributes of an obsel from its csv line.
+       *
+       * @param {!required} obs {Object} The obsel.
+       * @param {!required} data {Array} The obsel line.
+       *
+       * @method _getAttributes
+       */
+      _getAttributes: function(obs, data) {
+        if (this.csvSchema.typeColumn !== -1) {
+          typeObject = this._findTypeObject(data[this.csvSchema.typeColumn]);
+          if (typeObject !== null && typeObject.enabled)
+            obs['@type'] = 'm:' + typeObject.name;
+          else
+            push = false;
+        } else {
+          obs['@type'] = 'm:defaultType';
+        }
+        // Set every attribute of the obsel
+        for (var j = 0; j < data.length; j++) {
+          if (typeObject === null) {
+            obs['m:' + this.csvSchema.columns[j].name] = data[j];
+          } else {
+            if (typeObject.attributes[j].enabled) {
+              if (typeObject.attributes[j].datatype === 'json') {
+                this._getAttributesFromJSON(tmp, typeObject.attributes[j].name, data[j]);
+              } else {
+                obs['m:' + typeObject.attributes[j].name] = data[j];
+              }
+            }
+          }
+        }
+        return obs;
+      },
+
+      /**
+       * Retrieve the obsel type corresponding to a cell value in the csv file.
+       *
+       * @param {!required} title {Object} The csv cell value.
+       *
+       * @method _findTypeObject
+       */
+      _findTypeObject: function(title) {
+        for (var i = 0; i < this.csvSchema.typesObjects.length; i++) {
+          if (this.csvSchema.typesObjects[i].title === title) {
+            return this.csvSchema.typesObjects[i];
+          }
+        }
+        return null;
+      },
+
+      /**
+       * Parse the date from a cell value in the csv file.
+       *
+       * @param {!required} format {String} The custom date format.
+       * @param {!required} data {String} The csv cell value.
+       *
+       * @method _getDate
+       */
+      _getDate: function(format, data) {
+        function getElement(format, symbol, data, match) {
+          var index = format.search(symbol);
+          if (match != null && index > -1 && index < match.length)
+            return parseInt(match[index]);
+          else
+            return 0;
+        }
+        var match = data.match(/\d+/g);
+        var month = getElement(format, 'M', data, match);
+        // We upload month - 1 because months start at 0...
+        var date = new Date(getElement(format, 'Y', data, match), month - 1, getElement(format, 'D', data, match));
+        date.setHours(getElement(format, 'H', data, match));
+        date.setMilliseconds(getElement(format, 's', data, match));
+        date.setMinutes(getElement(format, 'm', data, match));
+        date.setSeconds(getElement(format, 'S', data, match));
+        return date.getTime();
+      },
+
+      /**
+       * Parse the json of a cell value to get all the corrsponding attributes.
+       *
+       * @param {!required} tmpObsel {String} The current obsel being set.
+       * @param {!required} attributeBase {String} The base string of the attribute.
+       * @param {!required} data {String} The csv cell value.
+       *
+       * @method _getAttributesFromJSON
+       */
+      _getAttributesFromJSON: function(tmpObsel, attributeBase, data) {
         var json = null;
         var atts = [];
-
         function process(base, obj) {
-
           for (var prop in obj) {
-
             if (typeof obj[prop] === "object") {
               process(base + '_' + prop, obj[prop]);
             } else {
@@ -696,36 +740,34 @@
               objTmp.attValue = obj[prop];
               atts.push(objTmp);
             }
-
           }
-
         }
-
-
         try {
           json = JSON.parse(data);
         } catch (e) {
           return null;
         }
-
         process(attributeBase, json);
-
         for (var i = 0; i < atts.length; i++) {
           this._registerAttribute(atts[i].attName, tmpObsel);
           var att4obsel = 'm:' + atts[i].attName;
           tmpObsel[att4obsel] = atts[i].attValue;
         }
-
       },
 
+      /**
+       * If new, save a attribute in the _temporaryAttributes graph, in order to complete the trace model later.
+       *
+       * @param {!required} attName {String} The attribute name.
+       * @param {!required} tmpObsel {String} The current obsel being set.
+       *
+       * @method _registerAttribute
+       */
       _registerAttribute: function(attName, tmpObsel) {
         var exists = false;
-
         var obselType = tmpObsel['@type'].replace('m:', '');
         obselType = '#' + obselType;
-
         for (var j = 0; j < this._temporaryAttributes.length; j++) {
-
           if (this._temporaryAttributes[j]['@id'] === attName) {
             exists = true;
             var typeSet = false;
@@ -739,9 +781,6 @@
             }
           }
         }
-
-        // TODO : UPLOAD THE ATTRIBUTES !!!
-
         if (!exists) {
           var attr = {
             "@id": '#' + attName,
@@ -751,90 +790,7 @@
           }
           this.push('_temporaryAttributes', attr);
         }
-
-      },
-
-
-
-      _postPartOfSliceSuccess: function() {
-
-        var that = this;
-
-        //TODO : Remove log.
-        console.log('        PACKAGED SENT ' + that.partIndex + new Date().toISOString());
-
-        if (this.partIndex < this.parsedData.data.length - 1) {
-          this.$.fileProgress.style.width =
-            (((this.sliceIndex - 1) * (1000 / this.sliceCount)) + (((1000 / this.sliceCount) / this.parsedData.data.length) * this.partIndex)) + 'px';
-          this._postPartOfSlice();
-        } else {
-          this.sliceIndex = this.sliceIndex + 1;
-          if (this.sliceIndex <= this.sliceCount) {
-            var callbackObject = {
-              onload: function(evt) {
-                that._startParsing(evt.target.result);
-              },
-              onerror: function(evt) {},
-              onprogress: function(evt) {}
-            }
-
-            this._filereader.getSlice(
-              this.fileIndex,
-              this.sliceIndex,
-              callbackObject
-            );
-          } else {
-            this.fileIndex = this.fileIndex + 1;
-
-            this.push('_tracesCreatedUrl', this.currentTrace.uri);
-
-            this._createTrace();
-          }
-        }
-      },
-
-      _postPartOfSliceError: function() {
-        console.log("postPartOfSlice Failed");
-        this.fileIndex = this.fileIndex + 1;
-
-        this.push('_tracesCreatedUrl', this.currentTrace.uri);
-
-        this._createTrace();
-      },
-
-      _findTypeObject: function(title) {
-        for (var i = 0; i < this.csvSchema.typesObjects.length; i++) {
-          if (this.csvSchema.typesObjects[i].title === title) {
-            return this.csvSchema.typesObjects[i];
-          }
-        }
-        return null;
-      },
-
-      _getDate: function(format, data) {
-
-        function getElement(format, symbol, data, match) {
-          var index = format.search(symbol);
-          if (match != null && index > -1 && index < match.length)
-            return parseInt(match[index]);
-          else
-            return 0;
-        }
-
-        var match = data.match(/\d+/g);
-
-        var month = getElement(format, 'M', data, match);
-        var date = new Date(getElement(format, 'Y', data, match), month-1, getElement(format, 'D', data, match));
-        date.setHours(getElement(format, 'H', data, match));
-        date.setMilliseconds(getElement(format, 's', data, match));
-        date.setMinutes(getElement(format, 'm', data, match));
-        date.setSeconds(getElement(format, 'S', data, match));
-
-        return date.getTime();
-      },
-
-
-
+      }
     });
   </script>
 </dom-module>
