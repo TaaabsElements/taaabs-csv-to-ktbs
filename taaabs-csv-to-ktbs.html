@@ -664,7 +664,7 @@
           } else {
             if (typeObject.attributes[j].enabled) {
               if (typeObject.attributes[j].datatype === 'json') {
-                this._getAttributesFromJSON(tmp, typeObject.attributes[j].name, data[j]);
+                this._getAttributesFromJSON(obs, typeObject.attributes[j].name, data[j]);
               } else {
                 obs['m:' + typeObject.attributes[j].name] = data[j];
               }
