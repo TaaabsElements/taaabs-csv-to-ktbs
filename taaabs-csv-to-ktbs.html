@@ -446,32 +446,26 @@
             })
         } else {
           // TODO : Check this
+          console.log(this._temporaryAttributes);
           if (this._temporaryAttributes.length > 0) {
-            var model = new Samotraces.Ktbs.Model(that.base.uri + that.csvSchema.id);
-
-            //TODO : Remove log.
-            console.log('UPDATE MODEL ' + that.fileIndex + new Date().toISOString());
-
+            var model = new Samotraces.Ktbs.Model(this.base.uri + this.csvSchema.id);
             model.load()
               .then(function() {
                 var graph = [];
                 for (var i = 0; i < model.list_type_obsels.length; i++)
                   graph.push(model.list_type_obsels[i]);
-                for (var i = 0; i < that._temporaryAttributes.length; i++)
-                  graph.push(that._temporaryAttributes[i]);
-
-                console.log(graph);
+                  for (var i = 0; i < model.list_type_attributes.length; i++)
+                    graph.push(model.list_type_attributes[i]);
+                for (var i = 0; i < this._temporaryAttributes.length; i++)
+                  graph.push(this._temporaryAttributes[i]);
                 model.put_model(graph)
                   .then(function() {
-
-                    //TODO : Remove log.
-                    console.log('  MODEL UPDATED ' + that.fileIndex + new Date().toISOString());
 
                   })
                   .catch(function(err) {
                     console.log(err);
                   })
-              })
+              }.bind(this))
               .catch(function(err) {
                 console.log(err);
               })
