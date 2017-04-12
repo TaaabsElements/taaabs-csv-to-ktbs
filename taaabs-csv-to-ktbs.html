@@ -659,7 +659,10 @@
             if (typeObject.attributes[j].enabled) {
               if (typeObject.attributes[j].datatype === 'json') {
                 this._getAttributesFromJSON(obs, typeObject.attributes[j].name, data[j]);
-              } else {
+              } else if(typeObject.attributes[j].datatype === 'xsd:decimal'){
+                obs['m:' + typeObject.attributes[j].name] = (!isNaN(data[j])) ? Number(data[j]) : data[j];
+              }
+              else{
                 obs['m:' + typeObject.attributes[j].name] = data[j];
               }
             }
